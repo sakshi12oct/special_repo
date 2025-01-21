@@ -1,0 +1,5 @@
+# 1. Namespace (optional but recommended)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: expense-tracker

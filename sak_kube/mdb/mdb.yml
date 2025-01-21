@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: expense-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: example
+          volumeMounts:
+            - name: mongo-data  # Corrected volume name reference
+              mountPath: /data/db
+      volumes:
+        - name: mongo-data  # Add this volume definition
+          persistentVolumeClaim:
+            claimName: mongo-data  # Ensure it matches the PVC name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: expense-tracker
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-data
+  namespace: expense-tracker  # Correct namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi  # Make sure it matches the volume size of the PV
+  storageClassName: ebs-class  # Ensure this matches the storage class of the PV
+

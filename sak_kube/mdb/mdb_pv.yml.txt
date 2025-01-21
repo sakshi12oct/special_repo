@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-data
+  namespace: expense-tracker
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ebs-class
+  resources:
+    requests:
+      storage: 15Gi
